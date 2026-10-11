@@ -1,5 +1,5 @@
 /* Service worker — offline-first precache for تاريخ ابن خلدون */
-const VERSION = '1.0.0';
+const VERSION = '1.0.1';
 const CACHE = 'tarikh-ibn-khaldun-' + VERSION;
 const ASSETS = [
   './',

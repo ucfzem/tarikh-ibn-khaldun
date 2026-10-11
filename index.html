@@ -26,6 +26,7 @@ html[data-theme="sepia"]{--bg:#efe4cf;--surface:#f8efdd;--surface2:#e7d9bd;--tex
   --line:#ddcba6;--accent:#9a6b16;--accent-soft:#f0e0bd;--mark:#f2cf74;--mark-text:#3a2c00}
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
+html,body{overflow-x:hidden}
 body{background:var(--bg);color:var(--text);font-family:var(--ui);font-size:15px;line-height:1.7;
   -webkit-text-size-adjust:100%;transition:background .2s,color .2s}
 a{color:var(--accent);text-decoration:none}
@@ -106,13 +107,16 @@ footer#attrib{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);
   font-size:.74rem;text-align:center;line-height:1.9}
 #overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:35}
 @media(max-width:860px){
-  #side{position:fixed;top:0;bottom:0;inset-inline-end:0;transform:translateX(105%);transition:transform .25s;
-    width:86vw;max-width:340px;flex-basis:auto}
-  #side.open{transform:none}
+  #side{position:fixed;top:0;bottom:0;right:-100%;left:auto;transition:right .25s ease;
+    width:86vw;max-width:340px;flex-basis:auto;box-shadow:-4px 0 24px rgba(0,0,0,.35)}
+  #side.open{right:0}
   #overlay.show{display:block}
   #menuBtn{display:inline-flex}
-  #content{padding:16px 16px 100px}
+  #main{width:100%}
+  #content{padding:16px 16px 100px;max-width:100%}
   h2.doc-title{font-size:1.55rem}
+  #topbar{padding:9px 12px}
+  #crumb{font-size:.74rem}
 }
 @media print{#side,#topbar{display:none}}
 </style>
@@ -155,11 +159,11 @@ footer#attrib{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);
   </main>
 </div>
 
-<script src="book-data.js?v=1.0.0"></script>
+<script src="book-data.js?v=1.0.1"></script>
 <script>
 (function(){
 "use strict";
-var BUILD="1.0.0";
+var BUILD="1.0.1";
 var DATA=window.__IK__;
 var content=document.getElementById('content');
 var treeEl=document.getElementById('tree');
