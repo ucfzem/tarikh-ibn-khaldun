@@ -1,5 +1,5 @@
 /* Service worker — offline-first precache for تاريخ ابن خلدون */
-const VERSION = '1.0.1';
+const VERSION = '1.0.2';
 const CACHE = 'tarikh-ibn-khaldun-' + VERSION;
 const ASSETS = [
   './',
@@ -36,6 +36,18 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== location.origin) return;
   e.respondWith((async () => {
     const cache = await caches.open(CACHE);
+    // Network-first for page navigations so CSS/JS updates land immediately.
+    if (req.mode === 'navigate') {
+      try {
+        const res = await fetch(req);
+        if (res && res.ok) cache.put('./index.html', res.clone());
+        return res;
+      } catch (err) {
+        const shell = await cache.match('./index.html', { ignoreSearch: true });
+        if (shell) return shell;
+        throw err;
+      }
+    }
     const cached = await cache.match(req, { ignoreSearch: true });
     if (cached) {
       fetch(req).then(r => { if (r && r.ok) cache.put(req, r.clone()); }).catch(() => {});
@@ -46,10 +58,6 @@ self.addEventListener('fetch', (e) => {
       if (res && res.ok) cache.put(req, res.clone());
       return res;
     } catch (err) {
-      if (req.mode === 'navigate') {
-        const shell = await cache.match('./index.html', { ignoreSearch: true });
-        if (shell) return shell;
-      }
       throw err;
     }
   })());
