@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تاريخ ابن خلدون — ديوان المبتدأ والخبر</title>
+<meta name="description" content="تاريخ ابن خلدون والمقدمة — قراءة أوفلاين مع بحث فوري">
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.json">
+<style>
+@font-face{font-family:'Amiri';src:url('fonts/Amiri-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Amiri';src:url('fonts/Amiri-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Cairo';src:url('fonts/Cairo-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Cairo';src:url('fonts/Cairo-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+:root{
+  --bg:#f6f3ec;--surface:#fffdf8;--surface2:#efe9dd;--text:#221f1a;--muted:#6b6456;
+  --line:#e0d8c8;--accent:#0f766e;--accent-soft:#d7efe9;--mark:#ffe08a;--mark-text:#3a2c00;
+  --shadow:0 1px 3px rgba(30,25,15,.08),0 8px 24px rgba(30,25,15,.06);
+  --reading-size:24px;--reading-lh:2;--ui:'Cairo',system-ui,'Segoe UI',sans-serif;
+  --read-font:'Amiri',Georgia,'Times New Roman',serif;
+}
+html[data-theme="dark"]{--bg:#14161a;--surface:#1c1f25;--surface2:#242832;--text:#e8e4da;--muted:#9aa0ab;
+  --line:#2f343d;--accent:#4fd1c5;--accent-soft:#123a37;--mark:#7a5f00;--mark-text:#fff3c4;
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35)}
+html[data-theme="sepia"]{--bg:#efe4cf;--surface:#f8efdd;--surface2:#e7d9bd;--text:#3a2f1c;--muted:#7a6a49;
+  --line:#ddcba6;--accent:#9a6b16;--accent-soft:#f0e0bd;--mark:#f2cf74;--mark-text:#3a2c00}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--ui);font-size:15px;line-height:1.7;
+  -webkit-text-size-adjust:100%;transition:background .2s,color .2s}
+a{color:var(--accent);text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+#app{display:flex;min-height:100vh}
+#side{width:330px;flex:0 0 330px;background:var(--surface);border-inline-start:1px solid var(--line);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:40}
+.brand{padding:15px 16px 11px;border-bottom:1px solid var(--line)}
+.brand h1{margin:0;font-size:1.12rem;font-weight:700}
+.brand .sub{color:var(--muted);font-size:.76rem;margin-top:3px}
+.brand .sub b{color:var(--accent)}
+#searchWrap{padding:11px 14px;border-bottom:1px solid var(--line)}
+.search-ico{position:relative}
+#q{width:100%;padding:11px 14px 11px 38px;border:1px solid var(--line);border-radius:12px;
+  background:var(--surface2);color:var(--text);font-size:.95rem;outline:none}
+html[dir=rtl] #q{padding:11px 38px 11px 14px}
+#q:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.search-ico::after{content:'⌕';position:absolute;inset-inline-start:12px;top:50%;transform:translateY(-50%);
+  font-size:1.3rem;color:var(--muted);pointer-events:none}
+#tools{display:flex;gap:6px;flex-wrap:wrap;padding:9px 14px;border-bottom:1px solid var(--line);align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:9px;
+  padding:6px 9px;font-size:.82rem;line-height:1;white-space:nowrap}
+.btn:hover{border-color:var(--accent)}
+.btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg .btn{border:0;border-radius:0;background:transparent}
+.seg .btn+.btn{border-inline-start:1px solid var(--line)}
+.spacer{flex:1}
+#tree{overflow-y:auto;flex:1;padding:8px 6px 40px}
+.node-children{margin-inline-start:12px;border-inline-start:1px dashed var(--line);padding-inline-start:6px;display:none}
+.node.open>.node-children{display:block}
+.row{display:flex;align-items:center;gap:3px;border-radius:8px;padding:2px 4px}
+.row:hover{background:var(--surface2)}
+.row.active{background:var(--accent-soft)}
+.caret{width:20px;height:20px;flex:0 0 20px;display:grid;place-items:center;border:0;background:transparent;
+  color:var(--muted);font-size:.68rem;border-radius:6px;visibility:hidden}
+.node.has-children>.row>.caret{visibility:visible}
+.node.open>.row>.caret{transform:rotate(180deg)}
+.row>a{flex:1;color:var(--text);padding:4px 2px;font-size:.85rem;line-height:1.45}
+.node[data-lvl="1"]>.row>a{font-weight:700;font-size:.92rem}
+.node[data-lvl="2"]>.row>a{font-weight:600;color:var(--accent)}
+.pcount{color:var(--muted);font-size:.72rem;font-weight:400}
+#main{flex:1;min-width:0;display:flex;flex-direction:column}
+#topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:9px 18px;
+  background:var(--surface);border-bottom:1px solid var(--line)}
+#menuBtn{display:none}
+#crumb{color:var(--muted);font-size:.79rem;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#crumb b{color:var(--accent)}
+#content{max-width:900px;margin:0 auto;padding:22px 26px 120px;width:100%}
+h2.doc-title{font-family:var(--read-font);font-size:1.9rem;line-height:1.5;margin:.1em 0 .7em;
+  padding-bottom:.28em;border-bottom:2px solid var(--accent-soft)}
+p.read{font-family:var(--read-font);font-size:var(--reading-size);line-height:var(--reading-lh);
+  text-align:justify;text-justify:inter-word;margin:0 0 .5em}
+p.read.hl{background:var(--accent-soft);border-radius:8px}
+.child-list{display:grid;gap:8px;margin-top:16px}
+.child-list a{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 14px;
+  box-shadow:var(--shadow);font-family:var(--read-font);font-size:1.12rem;color:var(--text);
+  display:flex;justify-content:space-between;gap:10px;align-items:center}
+.child-list a:hover{border-color:var(--accent)}
+.child-list a .pc{color:var(--muted);font-family:var(--ui);font-size:.72rem;white-space:nowrap}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:34px;border-top:1px solid var(--line);padding-top:16px}
+.pager a{display:flex;flex-direction:column;max-width:48%;font-size:.8rem}
+.pager a small{color:var(--muted)}
+.pager a span{font-family:var(--read-font);font-size:1.05rem;color:var(--text)}
+.pager a.next{text-align:end;margin-inline-start:auto}
+mark{background:var(--mark);color:var(--mark-text);border-radius:3px;padding:0 2px}
+#results{padding:6px 10px 40px;overflow-y:auto;flex:1}
+.res{border:1px solid var(--line);background:var(--surface);border-radius:11px;padding:9px 12px;margin:7px 0;
+  cursor:pointer;box-shadow:var(--shadow)}
+.res:hover{border-color:var(--accent)}
+.res .rt{font-size:.77rem;color:var(--accent);font-weight:600;margin-bottom:3px}
+.res .rs{font-family:var(--read-font);font-size:1.02rem;line-height:1.7;color:var(--text);
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.muted{color:var(--muted);font-size:.82rem;padding:8px 12px}
+#hint{margin:26px auto;max-width:660px;text-align:center;color:var(--muted);font-size:.9rem;line-height:2}
+#hint kbd{background:var(--surface2);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.8rem}
+footer#attrib{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);
+  font-size:.74rem;text-align:center;line-height:1.9}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:35}
+@media(max-width:860px){
+  #side{position:fixed;top:0;bottom:0;inset-inline-end:0;transform:translateX(105%);transition:transform .25s;
+    width:86vw;max-width:340px;flex-basis:auto}
+  #side.open{transform:none}
+  #overlay.show{display:block}
+  #menuBtn{display:inline-flex}
+  #content{padding:16px 16px 100px}
+  h2.doc-title{font-size:1.55rem}
+}
+@media print{#side,#topbar{display:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="side">
+    <div class="brand">
+      <h1>تاريخ ابن خلدون</h1>
+      <div class="sub">ديوان المبتدأ والخبر · <b id="vlabel">…</b></div>
+    </div>
+    <div id="searchWrap">
+      <div class="search-ico"><input id="q" type="search" placeholder="ابحث في الكتاب… (نص كامل)" autocomplete="off" spellcheck="false"></div>
+    </div>
+    <div id="tools">
+      <button class="btn" id="prevBtn" title="السابق">السابق</button>
+      <button class="btn" id="nextBtn" title="التالي">التالي</button>
+      <span class="spacer"></span>
+      <div class="seg" id="themeSeg">
+        <button class="btn" data-theme="light" title="نهاري">☀</button>
+        <button class="btn" data-theme="sepia" title="ورقي">◐</button>
+        <button class="btn" data-theme="dark" title="ليلي">☾</button>
+      </div>
+      <div class="seg">
+        <button class="btn" id="fsMinus" title="تصغير الخط">أ−</button>
+        <button class="btn" id="fsPlus" title="تكبير الخط">أ+</button>
+      </div>
+      <button class="btn" id="fontBtn" title="تبديل الخط">الخط: <b id="fontName">أميري</b></button>
+    </div>
+    <nav id="tree"></nav>
+    <div id="results" style="display:none"></div>
+  </aside>
+  <div id="overlay"></div>
+  <main id="main">
+    <div id="topbar">
+      <button class="btn" id="menuBtn" title="القائمة">☰ الفهرس</button>
+      <div id="crumb"></div>
+    </div>
+    <div id="content"></div>
+  </main>
+</div>
+
+<script src="book-data.js?v=1.0.0"></script>
+<script>
+(function(){
+"use strict";
+var BUILD="1.0.0";
+var DATA=window.__IK__;
+var content=document.getElementById('content');
+var treeEl=document.getElementById('tree');
+var resultsEl=document.getElementById('results');
+var crumbEl=document.getElementById('crumb');
+var qEl=document.getElementById('q');
+var sideEl=document.getElementById('side');
+var overlay=document.getElementById('overlay');
+
+/* ---- flatten ---- */
+var NODES=[], BY_ID={};
+(function walk(list,parent){for(var i=0;i<list.length;i++){var n=list[i];n.parentId=parent?parent.id:0;
+  BY_ID[n.id]=n;NODES.push(n);if(n.children&&n.children.length)walk(n.children,n);}})(DATA.parts,null);
+var ORDER=NODES;
+var READ=ORDER.filter(function(n){return n.paragraphs&&n.paragraphs.length;});
+
+/* ---- text normalisation ---- */
+var TASH=/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/;
+function normChar(ch){
+  if(ch==='\u0622'||ch==='\u0623'||ch==='\u0625'||ch==='\u0671')return '\u0627';
+  if(ch==='\u0649'||ch==='\u0626')return '\u064A';
+  if(ch==='\u0624')return '\u0648';
+  if(ch==='\u0629')return '\u0647';
+  if(/[\u0621-\u064A0-9a-zA-Z]/.test(ch))return ch;
+  return ' ';
+}
+function norm(s){var out='',prevSpace=true;for(var i=0;i<s.length;i++){var ch=s[i];
+  if(TASH.test(ch))continue;var c=normChar(ch);
+  if(c===' '){if(prevSpace)continue;prevSpace=true;}else prevSpace=false;out+=c;}
+  return out.trim();}
+function normMap(raw){var out='',map=[];for(var i=0;i<raw.length;i++){var ch=raw[i];
+  if(TASH.test(ch))continue;var c=normChar(ch);
+  if(c===' '&&out.slice(-1)===' ')continue;
+  for(var k=0;k<c.length;k++){out+=c[k];map.push(i);}}
+  map.push(raw.length);return {n:out,map:map};}
+function esc(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function highlight(raw,nq){if(!nq)return esc(raw);var m=normMap(raw);var s=m.n.indexOf(nq);
+  if(s<0)return esc(raw);var rs=m.map[s],re=m.map[Math.min(s+nq.length,m.n.length)];
+  return esc(raw.slice(0,rs))+'<mark>'+esc(raw.slice(rs,re))+'</mark>'+esc(raw.slice(re));}
+
+/* ---- search index (lazy) ---- */
+var SEARCH=null;
+function buildIndex(){if(SEARCH)return;SEARCH=[];
+  for(var i=0;i<NODES.length;i++){var n=NODES[i];
+    if(n.title)SEARCH.push({id:n.id,pi:-1,raw:n.title,norm:norm(n.title)});
+    var ps=n.paragraphs||[];for(var j=0;j<ps.length;j++)SEARCH.push({id:n.id,pi:j,raw:ps[j],norm:norm(ps[j])});}}
+
+/* ---- sidebar tree (lazy children) ---- */
+function nodeRow(n){
+  var has=n.children&&n.children.length;
+  var wrap=document.createElement('div');wrap.className='node'+(has?' has-children':'');
+  wrap.dataset.lvl=n.level;wrap.dataset.id=n.id;
+  var row=document.createElement('div');row.className='row';
+  var caret=document.createElement('button');caret.className='caret';caret.textContent='▾';
+  var a=document.createElement('a');a.href='#/'+n.id;a.textContent=(n.title&&n.title.trim())?n.title:'…';
+  if(n.paragraphs&&n.paragraphs.length){var c=document.createElement('span');c.className='pcount';c.textContent=' ‏('+n.paragraphs.length+')';a.appendChild(c);}
+  row.appendChild(caret);row.appendChild(a);wrap.appendChild(row);
+  if(has){var kids=document.createElement('div');kids.className='node-children';var built=false;
+    function ensure(){if(built)return;built=true;for(var i=0;i<n.children.length;i++)kids.appendChild(nodeRow(n.children[i]));}
+    caret.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();wrap.classList.toggle('open');ensure();});
+    a.addEventListener('click',ensure);wrap.appendChild(kids);}
+  return wrap;
+}
+function renderTree(){var frag=document.createDocumentFragment();
+  for(var i=0;i<DATA.parts.length;i++)frag.appendChild(nodeRow(DATA.parts[i]));treeEl.appendChild(frag);}
+function openAncestors(id){var n=BY_ID[id];while(n&&n.parentId){
+  var el=treeEl.querySelector('.node[data-id="'+n.id+'"]');if(el)el.classList.add('open');
+  n=BY_ID[n.parentId];}}
+
+/* ---- content rendering ---- */
+function makeP(text,nq,isHit){
+  var p=document.createElement('p');p.className='read'+(isHit?' hl':'');
+  if(nq&&isHit)p.innerHTML=highlight(text,nq);else p.textContent=text;
+  return p;
+}
+function childList(n){
+  var list=document.createElement('div');list.className='child-list';
+  n.children.forEach(function(c){var a=document.createElement('a');a.href='#/'+c.id;
+    var t=document.createElement('span');t.textContent=(c.title&&c.title.trim())?c.title:'…';
+    a.appendChild(t);if(c.paragraphs&&c.paragraphs.length){var pc=document.createElement('span');pc.className='pc';pc.textContent=c.paragraphs.length+' فقرة';a.appendChild(pc);}
+    list.appendChild(a);});
+  return list;
+}
+function pager(n){var idx=READ.indexOf(n);if(idx<0)return null;var pg=document.createElement('div');pg.className='pager';
+  if(idx>0){var pv=READ[idx-1];var a=document.createElement('a');a.href='#/'+pv.id;
+    a.innerHTML='<small>السابق</small><span>'+esc(pv.title)+'</span>';pg.appendChild(a);}
+  if(idx<READ.length-1){var nx=READ[idx+1];var b=document.createElement('a');b.className='next';b.href='#/'+nx.id;
+    b.innerHTML='<small>التالي</small><span>'+esc(nx.title)+'</span>';pg.appendChild(b);}
+  return pg.children.length?pg:null;
+}
+function attrib(){var f=document.createElement('footer');f.id='attrib';
+  f.innerHTML='المصدر: '+esc(DATA.meta.title||'')+' — تحقيق '+esc(DATA.meta.editor||'')+
+    ' ('+esc(DATA.meta.edition||'')+') · النص الرقمي: OpenITI (Shamela_0012320) · الإصدار '+BUILD;
+  return f;}
+function renderNode(n,hit){content.innerHTML='';hideResults();qEl.value='';
+  crumbEl.innerHTML=(n.path||[]).map(function(t,i){var s=t.length>70?t.slice(0,70)+'…':t;
+    return (i===n.path.length-1?'<b>':'')+esc(s)+(i===n.path.length-1?'</b>':'');}).join(' ← ');
+  var h=document.createElement('h2');h.className='doc-title';h.textContent=n.title||'…';content.appendChild(h);
+  var ps=n.paragraphs||[];
+  for(var i=0;i<ps.length;i++)content.appendChild(makeP(ps[i], hit&&hit.nq, hit&&hit.pi===i));
+  if(n.children&&n.children.length)content.appendChild(childList(n));
+  var pg=pager(n);if(pg)content.appendChild(pg);
+  content.appendChild(attrib());
+  // active row
+  var prev=treeEl.querySelector('.row.active');if(prev)prev.classList.remove('active');
+  openAncestors(n.id);
+  var row=treeEl.querySelector('.node[data-id="'+n.id+'] > .row');
+  if(row)row.classList.add('active');
+  try{localStorage.setItem('ik.last',n.id);}catch(e){}
+  window.scrollTo(0,0);document.getElementById('main').scrollTop=0;closeSide();
+}
+
+/* ---- search ---- */
+var timer=null;
+function runSearch(v){var nq=norm(v);if(nq.length<2){hideResults();return;}
+  buildIndex();var hits=[],CAP=150;
+  for(var i=0;i<SEARCH.length&&hits.length<CAP;i++)if(SEARCH[i].norm.indexOf(nq)>=0)hits.push(SEARCH[i]);
+  showResults(hits,nq);}
+function showResults(hits,nq){treeEl.style.display='none';resultsEl.style.display='block';
+  var h='<div class="muted">'+hits.length+(hits.length>=150?'+':'')+' نتيجة</div>';
+  if(!hits.length){h+='<div class="muted">لا نتائج.</div>';resultsEl.innerHTML=h;return;}
+  for(var i=0;i<hits.length;i++){var it=hits[i],n=BY_ID[it.id];
+    var tt=n.title.length>70?n.title.slice(0,70)+'…':n.title;
+    h+='<div class="res" data-id="'+it.id+'" data-pi="'+it.pi+'"><div class="rt">'+esc(tt)+'</div><div class="rs">'+highlight(it.raw,nq)+'</div></div>';}
+  resultsEl.innerHTML=h;
+  Array.prototype.forEach.call(resultsEl.querySelectorAll('.res'),function(el){
+    el.addEventListener('click',function(){renderNode(BY_ID[+el.dataset.id],{pi:+el.dataset.pi,nq:nq});});});
+}
+function hideResults(){if(resultsEl.style.display==='none')return;resultsEl.style.display='none';resultsEl.innerHTML='';treeEl.style.display='block';}
+qEl.addEventListener('input',function(){clearTimeout(timer);var v=qEl.value;
+  if(!v.trim()){hideResults();return;}timer=setTimeout(function(){runSearch(v);},180);});
+qEl.addEventListener('keydown',function(e){if(e.key==='Escape'){qEl.value='';hideResults();qEl.blur();}});
+
+/* ---- controls ---- */
+function applyTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('ik.theme',t);}catch(e){}
+  Array.prototype.forEach.call(document.querySelectorAll('#themeSeg .btn'),function(b){b.classList.toggle('on',b.dataset.theme===t);});}
+function applySize(px){px=Math.max(16,Math.min(40,px));document.documentElement.style.setProperty('--reading-size',px+'px');try{localStorage.setItem('ik.size',px);}catch(e){}}
+function applyFont(i){var fam=i===1?'Cairo':'Amiri';document.documentElement.style.setProperty('--read-font',"'"+fam+"',Georgia,serif");
+  document.getElementById('fontName').textContent=i===1?'كايرو':'أميري';try{localStorage.setItem('ik.font',i);}catch(e){}}
+
+var size=parseInt(localStorage.getItem('ik.size'),10)||24;
+applySize(size);
+applyTheme(localStorage.getItem('ik.theme')||'light');
+applyFont(parseInt(localStorage.getItem('ik.font'),10)||0);
+Array.prototype.forEach.call(document.querySelectorAll('#themeSeg .btn'),function(b){b.addEventListener('click',function(){applyTheme(b.dataset.theme);});});
+document.getElementById('fsPlus').onclick=function(){size=Math.min(40,size+2);applySize(size);};
+document.getElementById('fsMinus').onclick=function(){size=Math.max(16,size-2);applySize(size);};
+document.getElementById('fontBtn').onclick=function(){applyFont((parseInt(localStorage.getItem('ik.font'),10)||0)===0?1:0);};
+document.getElementById('prevBtn').onclick=function(){jump(-1);};
+document.getElementById('nextBtn').onclick=function(){jump(1);};
+function jump(d){var n=BY_ID[+idFromHash()];if(!n)return;var i=READ.indexOf(n);if(i<0)i=0;var t=READ[i+d];if(t)location.hash='#/'+t.id;}
+
+/* ---- mobile / routing ---- */
+function openSide(){sideEl.classList.add('open');overlay.classList.add('show');}
+function closeSide(){sideEl.classList.remove('open');overlay.classList.remove('show');}
+document.getElementById('menuBtn').onclick=openSide;
+overlay.onclick=closeSide;
+function idFromHash(){return parseInt(location.hash.replace('#/',''),10)||0;}
+window.addEventListener('hashchange',function(){var id=idFromHash();if(id&&BY_ID[id])renderNode(BY_ID[id]);});
+document.addEventListener('keydown',function(e){if(e.key==='/'&&document.activeElement!==qEl){e.preventDefault();qEl.focus();openSide();}});
+
+/* ---- boot ---- */
+document.getElementById('vlabel').textContent='إصدار '+BUILD;
+renderTree();
+var start=parseInt(location.hash.replace('#/',''),10)||parseInt(localStorage.getItem('ik.last'),10)||0;
+if(start&&BY_ID[start]){if(location.hash)renderNode(BY_ID[start]);else location.hash='#/'+start;}
+else{content.innerHTML='<div id="hint"><p><b>ديوان المبتدأ والخبر في تاريخ العرب والبربر ومن عاصرهم</b></p>'+
+  '<p>اختر جزءًا من الفهرس، أو اضغط <kbd>/</kbd> للبحث في النص كاملًا.</p>'+
+  '<p>'+NODES.length+' عنوانًا · '+READ.reduce(function(a,n){return a+n.paragraphs.length;},0)+' فقرة · يعمل دون اتصال.</p></div>';}
+})();
+</script>
+</body>
+</html>

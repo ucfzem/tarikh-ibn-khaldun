@@ -1,0 +1,10 @@
+# الدوال المؤقتة
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+*.log
+
+# ناتج وسيط (يُنشأ من scripts/parse.mjs)
+data/book.json
+data/*.tmp
