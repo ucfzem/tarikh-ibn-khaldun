@@ -132,220 +132,70 @@ footer#attrib{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);
 </style>
 </head>
 <body>
-<div id="app">
-  <aside id="side">
-    <div class="brand">
-      <h1>تاريخ ابن خلدون</h1>
-      <div class="sub">ديوان المبتدأ والخبر · <b id="vlabel">…</b></div>
-    </div>
-    <div id="searchWrap">
-      <div class="search-ico"><input id="q" type="search" placeholder="ابحث في الكتاب… (نص كامل)" autocomplete="off" spellcheck="false"></div>
-    </div>
-    <div id="tools">
-      <button class="btn" id="prevBtn" title="السابق">السابق</button>
-      <button class="btn" id="nextBtn" title="التالي">التالي</button>
-      <span class="spacer"></span>
-      <div class="seg" id="themeSeg">
-        <button class="btn" data-theme="light" title="نهاري">☀</button>
-        <button class="btn" data-theme="sepia" title="ورقي">◐</button>
-        <button class="btn" data-theme="dark" title="ليلي">☾</button>
-      </div>
-      <div class="seg">
-        <button class="btn" id="fsMinus" title="تصغير الخط">أ−</button>
-        <button class="btn" id="fsReset" title="الخط الافتراضي">أ</button>
-        <button class="btn" id="fsPlus" title="تكبير الخط">أ+</button>
-      </div>
-      <button class="btn" id="fontBtn" title="تبديل الخط">الخط: <b id="fontName">أميري</b></button>
-    </div>
-    <nav id="tree"></nav>
-    <div id="results" style="display:none"></div>
-  </aside>
-  <div id="overlay"></div>
-  <main id="main">
-    <div id="topbar">
-      <button class="btn" id="menuBtn" title="القائمة">☰</button>
-      <div id="crumb"></div>
-    </div>
-    <div id="content"></div>
-  </main>
-</div>
 
-<script src="book-data.js?v=1.0.6"></script>
-<script>
+  <header>
+    <div>
+      <h1>تاريخ ابن خلدون</h1>
+      <p>ديوان المبتدأ والخبر في تاريخ العرب والبربر ومن عاصرهم · إصدار <span id="vlabel">…</span></p>
+    </div>
+    <button id="themeToggle" aria-label="تبديل الوضع النهاري/الليلي" title="تبديل الوضع">🌙</button>
+  </header>
+
+  <main id="content"></main>
+
+  <footer>
+    <p>📜 <b>تاريخ ابن خلدون</b> — ديوان المبتدأ والخبر في تاريخ العرب والبربر ومن عاصرهم، لعبد الرحمن بن محمد ابن خلدون (ت 808هـ / 1406م).</p>
+    <p>النص عن نسخة <b>OpenITI</b> (Shamela_0012320) · تحقيق خليل شحادة، دار الفكر، بيروت (1408هـ/1988م). بلا اختلاق.</p>
+  </footer>
+
+  <script src="book-data.js?v=1.0.6"></script>
+  <script>
 (function(){
 "use strict";
 var BUILD="1.0.6";
 var DATA=window.__IK__;
-var content=document.getElementById('content');
-var treeEl=document.getElementById('tree');
-var resultsEl=document.getElementById('results');
-var crumbEl=document.getElementById('crumb');
-var qEl=document.getElementById('q');
-var sideEl=document.getElementById('side');
-var overlay=document.getElementById('overlay');
-
-/* ---- flatten ---- */
-var NODES=[], BY_ID={};
-(function walk(list,parent){for(var i=0;i<list.length;i++){var n=list[i];n.parentId=parent?parent.id:0;
-  BY_ID[n.id]=n;NODES.push(n);if(n.children&&n.children.length)walk(n.children,n);}})(DATA.parts,null);
-var ORDER=NODES;
-var READ=ORDER.filter(function(n){return n.paragraphs&&n.paragraphs.length;});
-
-/* ---- text normalisation ---- */
+var contentEl=document.getElementById('content');
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});};
 var TASH=/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/;
-function normChar(ch){
-  if(ch==='\u0622'||ch==='\u0623'||ch==='\u0625'||ch==='\u0671')return '\u0627';
-  if(ch==='\u0649'||ch==='\u0626')return '\u064A';
-  if(ch==='\u0624')return '\u0648';
-  if(ch==='\u0629')return '\u0647';
-  if(/[\u0621-\u064A0-9a-zA-Z]/.test(ch))return ch;
-  return ' ';
+function norm(s){var o='',p=true;for(var i=0;i<s.length;i++){var ch=s[i];if(TASH.test(ch))continue;var c=ch;if(c===' '){if(p)continue;p=true;o+=' ';}else{p=false;o+=c;}}return o.toLowerCase();}
+var NODES=[],BY_ID={};
+(function walk(list,parent){for(var i=0;i<list.length;i++){var n=list[i];n.parentId=parent?parent.id:0;BY_ID[n.id]=n;NODES.push(n);if(n.children&&n.children.length)walk(n.children,n);}})(DATA.parts,null);
+var READ=NODES.filter(function(n){return n.paragraphs&&n.paragraphs.length;});
+function renderHome(){
+  var html='<div class="topnav">'+fontControlsHTML()+'<button id="indexBtn" type="button">🔎 الفهرس</button></div>'+
+    '<div class="home"><h1>تاريخ ابن خلدون</h1>'+
+    '<p class="desc">ديوان المبتدأ والخبر في تاريخ العرب والبربر ومن عاصرهم، لعبد الرحمن بن محمد ابن خلدون (ت 808هـ / 1406م).</p>'+
+    '<h2>اختر بابًا للبدء</h2>'+
+    '<div class="chap-list">'+
+    DATA.parts.map(function(p){return '<div class="chap-item"><button class="chap-btn" data-id="'+p.id+'">'+esc(p.title)+'</button></div>';}).join('')+
+    '</div></div>';
+  contentEl.innerHTML=html;
+  document.querySelectorAll('.chap-btn').forEach(function(b){b.onclick=function(){location.hash='#/'+b.dataset.id;};});
+  document.getElementById('indexBtn').onclick=renderIndexPage;
+  setupFontControls();
 }
-function norm(s){var out='',prevSpace=true;for(var i=0;i<s.length;i++){var ch=s[i];
-  if(TASH.test(ch))continue;var c=normChar(ch);
-  if(c===' '){if(prevSpace)continue;prevSpace=true;}else prevSpace=false;out+=c;}
-  return out.trim();}
-function normMap(raw){var out='',map=[];for(var i=0;i<raw.length;i++){var ch=raw[i];
-  if(TASH.test(ch))continue;var c=normChar(ch);
-  if(c===' '&&out.slice(-1)===' ')continue;
-  for(var k=0;k<c.length;k++){out+=c[k];map.push(i);}}
-  map.push(raw.length);return {n:out,map:map};}
-function esc(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-function highlight(raw,nq){if(!nq)return esc(raw);var m=normMap(raw);var s=m.n.indexOf(nq);
-  if(s<0)return esc(raw);var rs=m.map[s],re=m.map[Math.min(s+nq.length,m.n.length)];
-  return esc(raw.slice(0,rs))+'<mark>'+esc(raw.slice(rs,re))+'</mark>'+esc(raw.slice(re));}
-
-/* ---- search index (lazy) ---- */
-var SEARCH=null;
-function buildIndex(){if(SEARCH)return;SEARCH=[];
-  for(var i=0;i<NODES.length;i++){var n=NODES[i];
-    if(n.title)SEARCH.push({id:n.id,pi:-1,raw:n.title,norm:norm(n.title)});
-    var ps=n.paragraphs||[];for(var j=0;j<ps.length;j++)SEARCH.push({id:n.id,pi:j,raw:ps[j],norm:norm(ps[j])});}}
-
-/* ---- sidebar tree (lazy children) ---- */
-function nodeRow(n){
-  var has=n.children&&n.children.length;
-  var wrap=document.createElement('div');wrap.className='node'+(has?' has-children':'');
-  wrap.dataset.lvl=n.level;wrap.dataset.id=n.id;
-  var row=document.createElement('div');row.className='row';
-  var caret=document.createElement('button');caret.className='caret';caret.textContent='▾';
-  var a=document.createElement('a');a.href='#/'+n.id;a.textContent=(n.title&&n.title.trim())?n.title:'…';
-  if(n.paragraphs&&n.paragraphs.length){var c=document.createElement('span');c.className='pcount';c.textContent=' ‏('+n.paragraphs.length+')';a.appendChild(c);}
-  row.appendChild(caret);row.appendChild(a);wrap.appendChild(row);
-  if(has){var kids=document.createElement('div');kids.className='node-children';var built=false;
-    function ensure(){if(built)return;built=true;for(var i=0;i<n.children.length;i++)kids.appendChild(nodeRow(n.children[i]));}
-    caret.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();wrap.classList.toggle('open');ensure();});
-    a.addEventListener('click',ensure);wrap.appendChild(kids);}
-  return wrap;
+function renderIndexPage(){
+  contentEl.innerHTML='<div class="topnav">'+fontControlsHTML()+'<button id="homeBtn">🏠 القائمة الرئيسية</button></div>'+
+    '<div class="card"><h2>🔎 الفهرس والبحث</h2><input id="q" class="index-input" placeholder="ابحث..."></div>';
+  document.getElementById('homeBtn').onclick=renderHome;
+  setupFontControls();
 }
-function renderTree(){var frag=document.createDocumentFragment();
-  for(var i=0;i<DATA.parts.length;i++)frag.appendChild(nodeRow(DATA.parts[i]));treeEl.appendChild(frag);}
-function openAncestors(id){var n=BY_ID[id];while(n&&n.parentId){
-  var el=treeEl.querySelector('.node[data-id="'+n.id+'"]');if(el)el.classList.add('open');
-  n=BY_ID[n.parentId];}}
-
-/* ---- content rendering ---- */
-function makeP(text,nq,isHit){
-  var p=document.createElement('p');p.className='read'+(isHit?' hl':'');
-  if(nq&&isHit)p.innerHTML=highlight(text,nq);else p.textContent=text;
-  return p;
+var fs=24;
+function fontControlsHTML(){return '<span class="font-row"><button id="fdec">A−</button><button id="fres">A</button><button id="finc">A+</button></span>';}
+function setupFontControls(){
+  document.getElementById('fdec').onclick=function(){if(fs>16){fs-=2;document.documentElement.style.setProperty('--content-font-size',fs+'px');}};
+  document.getElementById('fres').onclick=function(){fs=24;document.documentElement.style.setProperty('--content-font-size',fs+'px');}};
+  document.getElementById('finc').onclick=function(){if(fs<40){fs+=2;document.documentElement.style.setProperty('--content-font-size',fs+'px');}};
 }
-function childList(n){
-  var list=document.createElement('div');list.className='child-list';
-  n.children.forEach(function(c){var a=document.createElement('a');a.href='#/'+c.id;
-    var t=document.createElement('span');t.textContent=(c.title&&c.title.trim())?c.title:'…';
-    a.appendChild(t);if(c.paragraphs&&c.paragraphs.length){var pc=document.createElement('span');pc.className='pc';pc.textContent=c.paragraphs.length+' فقرة';a.appendChild(pc);}
-    list.appendChild(a);});
-  return list;
+function setupTheme(){
+  var t=localStorage.getItem('ik_theme')||'dark';
+  document.documentElement.setAttribute('data-theme',t);
+  var btn=document.getElementById('themeToggle');btn.textContent=t==='dark'?'☀️':'🌙';
+  btn.onclick=function(){var nt=t==='dark'?'light':'dark';t=nt;document.documentElement.setAttribute('data-theme',nt);localStorage.setItem('ik_theme',nt);btn.textContent=nt==='dark'?'☀️':'🌙';};
 }
-function pager(n){var idx=READ.indexOf(n);if(idx<0)return null;var pg=document.createElement('div');pg.className='pager';
-  if(idx>0){var pv=READ[idx-1];var a=document.createElement('a');a.href='#/'+pv.id;
-    a.innerHTML='<small>السابق</small><span>'+esc(pv.title)+'</span>';pg.appendChild(a);}
-  if(idx<READ.length-1){var nx=READ[idx+1];var b=document.createElement('a');b.className='next';b.href='#/'+nx.id;
-    b.innerHTML='<small>التالي</small><span>'+esc(nx.title)+'</span>';pg.appendChild(b);}
-  return pg.children.length?pg:null;
-}
-function attrib(){var f=document.createElement('footer');f.id='attrib';
-  f.innerHTML='المصدر: '+esc(DATA.meta.title||'')+' — تحقيق '+esc(DATA.meta.editor||'')+
-    ' ('+esc(DATA.meta.edition||'')+') · النص الرقمي: OpenITI (Shamela_0012320) · الإصدار '+BUILD;
-  return f;}
-function renderNode(n,hit){content.innerHTML='';hideResults();qEl.value='';
-  crumbEl.innerHTML=(n.path||[]).map(function(t,i){var s=t.length>70?t.slice(0,70)+'…':t;
-    return (i===n.path.length-1?'<b>':'')+esc(s)+(i===n.path.length-1?'</b>':'');}).join(' ← ');
-  var h=document.createElement('h2');h.className='doc-title';h.textContent=n.title||'…';content.appendChild(h);
-  var ps=n.paragraphs||[];
-  for(var i=0;i<ps.length;i++)content.appendChild(makeP(ps[i], hit&&hit.nq, hit&&hit.pi===i));
-  if(n.children&&n.children.length)content.appendChild(childList(n));
-  var pg=pager(n);if(pg)content.appendChild(pg);
-  content.appendChild(attrib());
-  // active row
-  var prev=treeEl.querySelector('.row.active');if(prev)prev.classList.remove('active');
-  openAncestors(n.id);
-  var row=treeEl.querySelector('.node[data-id="'+n.id+'"] > .row');
-  if(row)row.classList.add('active');
-  try{localStorage.setItem('ik.last',n.id);}catch(e){}
-  window.scrollTo(0,0);document.getElementById('main').scrollTop=0;closeSide();
-}
-
-/* ---- search ---- */
-var timer=null;
-function runSearch(v){var nq=norm(v);if(nq.length<2){hideResults();return;}
-  buildIndex();var hits=[],CAP=150;
-  for(var i=0;i<SEARCH.length&&hits.length<CAP;i++)if(SEARCH[i].norm.indexOf(nq)>=0)hits.push(SEARCH[i]);
-  showResults(hits,nq);}
-function showResults(hits,nq){treeEl.style.display='none';resultsEl.style.display='block';
-  var h='<div class="muted">'+hits.length+(hits.length>=150?'+':'')+' نتيجة</div>';
-  if(!hits.length){h+='<div class="muted">لا نتائج.</div>';resultsEl.innerHTML=h;return;}
-  for(var i=0;i<hits.length;i++){var it=hits[i],n=BY_ID[it.id];
-    var tt=n.title.length>70?n.title.slice(0,70)+'…':n.title;
-    h+='<div class="res" data-id="'+it.id+'" data-pi="'+it.pi+'"><div class="rt">'+esc(tt)+'</div><div class="rs">'+highlight(it.raw,nq)+'</div></div>';}
-  resultsEl.innerHTML=h;
-  Array.prototype.forEach.call(resultsEl.querySelectorAll('.res'),function(el){
-    el.addEventListener('click',function(){renderNode(BY_ID[+el.dataset.id],{pi:+el.dataset.pi,nq:nq});});});
-}
-function hideResults(){if(resultsEl.style.display==='none')return;resultsEl.style.display='none';resultsEl.innerHTML='';treeEl.style.display='block';}
-qEl.addEventListener('input',function(){clearTimeout(timer);var v=qEl.value;
-  if(!v.trim()){hideResults();return;}timer=setTimeout(function(){runSearch(v);},180);});
-qEl.addEventListener('keydown',function(e){if(e.key==='Escape'){qEl.value='';hideResults();qEl.blur();}});
-
-/* ---- controls ---- */
-function applyTheme(t){document.documentElement.dataset.theme=t;try{localStorage.setItem('ik.theme',t);}catch(e){}
-  var th=document.getElementById('themeToggle');if(th)th.textContent=t==='dark'?'☀':'🌙';}
-function applySize(px){px=Math.max(16,Math.min(40,px));document.documentElement.style.setProperty('--reading-size',px+'px');try{localStorage.setItem('ik.size',px);}catch(e){}}
-function applyFont(i){var fam=i===1?'Cairo':'Amiri';document.documentElement.style.setProperty('--read-font',"'"+fam+"',Georgia,serif");
-  document.getElementById('fontName').textContent=i===1?'كايرو':'أميري';try{localStorage.setItem('ik.font',i);}catch(e){}}
-var size=parseInt(localStorage.getItem('ik.size'),10)||24;
-applySize(size);
-applyTheme(localStorage.getItem('ik.theme')||'light');
-applyFont(parseInt(localStorage.getItem('ik.font'),10)||0);
-//=function(){var cur=document.documentElement.dataset.theme||'dark';applyTheme(cur==='dark'?'light':'dark');};
-Array.prototype.forEach.call(document.querySelectorAll('#themeSeg .btn'),function(b){b.addEventListener('click',function(){applyTheme(b.dataset.theme);});});
-document.getElementById('fsPlus').onclick=function(){size=Math.min(40,size+2);applySize(size);};
-document.getElementById('fsMinus').onclick=function(){size=Math.max(16,size-2);applySize(size);};
-document.getElementById('fsReset').onclick=function(){size=24;applySize(size);};
-document.getElementById('fontBtn').onclick=function(){applyFont((parseInt(localStorage.getItem('ik.font'),10)||0)===0?1:0);};
-document.getElementById('prevBtn').onclick=function(){jump(-1);};
-document.getElementById('nextBtn').onclick=function(){jump(1);};
-function jump(d){var n=BY_ID[+idFromHash()];if(!n)return;var i=READ.indexOf(n);if(i<0)i=0;var t=READ[i+d];if(t)location.hash='#/'+t.id;}
-
-/* ---- mobile / routing ---- */
-function openSide(){sideEl.classList.add('open');overlay.classList.add('show');}
-function closeSide(){sideEl.classList.remove('open');overlay.classList.remove('show');}
-document.getElementById('menuBtn').onclick=openSide;
-overlay.onclick=closeSide;
-function idFromHash(){return parseInt(location.hash.replace('#/',''),10)||0;}
-window.addEventListener('hashchange',function(){var id=idFromHash();if(id&&BY_ID[id])renderNode(BY_ID[id]);});
-document.addEventListener('keydown',function(e){if(e.key==='/'&&document.activeElement!==qEl){e.preventDefault();qEl.focus();openSide();}});
-
-/* ---- boot ---- */
-document.getElementById('vlabel').textContent='إصدار '+BUILD;
-renderTree();
-var start=parseInt(location.hash.replace('#/',''),10)||parseInt(localStorage.getItem('ik.last'),10)||0;
-if(start&&BY_ID[start]){if(location.hash)renderNode(BY_ID[start]);else location.hash='#/'+start;}
-else{content.innerHTML='<div id="hint"><p><b>ديوان المبتدأ والخبر في تاريخ العرب والبربر ومن عاصرهم</b></p>'+
-  '<p>اختر جزءًا من الفهرس، أو اضغط <kbd>/</kbd> للبحث في النص كاملًا.</p>'+
-  '<p>'+NODES.length+' عنوانًا · '+READ.reduce(function(a,n){return a+n.paragraphs.length;},0)+' فقرة · يعمل دون اتصال.</p></div>';}
+setupTheme();
+document.documentElement.style.setProperty('--content-font-size','24px');
+renderHome();
 })();
-</script>
+  </script>
 </body>
-</html>
