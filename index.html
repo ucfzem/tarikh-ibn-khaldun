@@ -115,7 +115,7 @@ mark{background:var(--mark);color:var(--mark-text);border-radius:3px;padding:0 2
 #hint kbd{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.8rem}
 footer#attrib{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);
   font-size:.74rem;text-align:center;line-height:1.9;background:var(--panel);padding:14px}
-#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:900}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000}
 @media(max-width:860px){
   #side{position:fixed;top:0;bottom:0;right:-100%;left:auto;transition:right .25s ease;
     width:86vw;max-width:340px;flex-basis:auto;box-shadow:-4px 0 24px rgba(0,0,0,.35)}
@@ -318,7 +318,7 @@ var size=parseInt(localStorage.getItem('ik.size'),10)||24;
 applySize(size);
 applyTheme(localStorage.getItem('ik.theme')||'light');
 applyFont(parseInt(localStorage.getItem('ik.font'),10)||0);
-document.getElementById('themeToggle').onclick=function(){var cur=document.documentElement.dataset.theme||'dark';applyTheme(cur==='dark'?'light':'dark');};
+//=function(){var cur=document.documentElement.dataset.theme||'dark';applyTheme(cur==='dark'?'light':'dark');};
 Array.prototype.forEach.call(document.querySelectorAll('#themeSeg .btn'),function(b){b.addEventListener('click',function(){applyTheme(b.dataset.theme);});});
 document.getElementById('fsPlus').onclick=function(){size=Math.min(40,size+2);applySize(size);};
 document.getElementById('fsMinus').onclick=function(){size=Math.max(16,size-2);applySize(size);};
