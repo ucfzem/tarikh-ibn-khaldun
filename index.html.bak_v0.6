@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>تاريخ ابن خلدون — ديوان المبتدأ والخبر</title>
+<meta name="description" content="تاريخ ابن خلدون والمقدمة — قراءة أوفلاين مع بحث فوري">
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.json">
+<style>
+@font-face{font-family:'Amiri';src:url('fonts/Amiri-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Amiri';src:url('fonts/Amiri-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:'Cairo';src:url('fonts/Cairo-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Cairo';src:url('fonts/Cairo-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+:root{
+  --ink:#2b2118;--paper:#faf5e9;--panel:#f2e9d6;--green:#1f5c46;--gold:#a9792f;
+  --line:#d8c9a8;--card:#fffdf6;--accent-text:#7c5620;--muted:#7a6a50;
+  --header-text:#f5eeda;--focus:#ffd166;--mark:#ffd166;--mark-text:#3a2c00;
+  --accent-soft:#e7efe9;--shadow:0 1px 3px rgba(30,25,15,.08),0 8px 24px rgba(30,25,15,.06);
+  --bg:var(--paper);--surface:var(--card);--surface2:var(--panel);--text:var(--ink);--accent:var(--green);
+  --ui:'Cairo','Segoe UI','Tahoma','Geeza Pro','Noto Naskh Arabic',sans-serif;
+  --read-font:'Amiri','Traditional Arabic','Scheherazade New','Lateef',serif;
+  --reading-size:24px;--reading-lh:1.95;
+}
+html[data-theme="dark"]{
+  --ink:#ece4d3;--paper:#16130e;--panel:#241f16;--green:#4e9a73;--gold:#d3a34a;
+  --line:#3a3225;--card:#1e1912;--accent-text:#d9b977;--muted:#9a8a6c;
+  --header-text:#f5eeda;--focus:#ffd166;--accent-soft:#1c2b23;
+}
+html[data-theme="sepia"]{
+  --bg:#efe4cf;--surface:#f8efdd;--surface2:#e7d9bd;--text:#3a2f1c;--muted:#7a6a49;
+  --line:#ddcba6;--accent:#9a6b16;--accent-soft:#f0e0bd;--mark:#f2cf74;--mark-text:#3a2c00;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+html,body{overflow-x:hidden}
+body{background:var(--bg);color:var(--text);font-family:var(--ui);font-size:15px;line-height:1.7;
+  -webkit-text-size-adjust:100%;transition:background .2s,color .2s}
+a{color:var(--accent);text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+button:focus,input:focus,a:focus{outline:3px solid var(--focus);outline-offset:2px}
+#app{display:flex;min-height:100vh}
+#side{width:330px;flex:0 0 330px;background:var(--panel);border-inline-start:1px solid var(--line);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:40}
+.brand{padding:15px 16px 11px;border-bottom:1px solid rgba(255,255,255,.4);background:var(--green);color:var(--header-text)}
+.brand h1{margin:0;font-size:1.12rem;font-weight:700}
+.brand .sub{color:rgba(255,255,255,.9);font-size:.76rem;margin-top:3px}
+.brand .sub b{color:#fff}
+#searchWrap{padding:11px 14px;border-bottom:1px solid var(--line)}
+.search-ico{position:relative}
+#q{width:100%;padding:11px 14px 11px 38px;border:1px solid var(--line);border-radius:8px;
+  background:var(--card);color:var(--text);font-size:.95rem;outline:none}
+html[dir=rtl] #q{padding:11px 38px 11px 14px}
+#q:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,209,102,.35)}
+.search-ico::after{content:'⌕';position:absolute;inset-inline-start:12px;top:50%;transform:translateY(-50%);
+  font-size:1.3rem;color:var(--muted);pointer-events:none}
+#tools{display:flex;gap:6px;flex-wrap:wrap;padding:9px 14px;border-bottom:1px solid var(--line);align-items:center}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:6px;
+  padding:6px 9px;font-size:.82rem;line-height:1;white-space:nowrap}
+.btn:hover{background:var(--gold);color:#fff;border-color:var(--gold)}
+.btn.on{background:var(--green);color:#fff;border-color:var(--green)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg .btn{border:0;border-radius:0;background:transparent}
+.seg .btn+.btn{border-inline-start:1px solid var(--line)}
+.spacer{flex:1}
+#tree{overflow-y:auto;flex:1;padding:8px 6px 40px}
+.node-children{margin-inline-start:12px;border-inline-start:1px dashed var(--line);padding-inline-start:6px;display:none}
+.node.open>.node-children{display:block}
+.row{display:flex;align-items:center;gap:3px;border-radius:6px;padding:2px 4px}
+.row:hover{background:var(--card)}
+.row.active{background:var(--accent-soft)}
+.caret{width:20px;height:20px;flex:0 0 20px;display:grid;place-items:center;border:0;background:transparent;
+  color:var(--muted);font-size:.68rem;border-radius:6px;visibility:hidden}
+.node.has-children>.row>.caret{visibility:visible}
+.node.open>.row>.caret{transform:rotate(180deg)}
+.row>a{flex:1;color:var(--text);padding:4px 2px;font-size:.85rem;line-height:1.45}
+.node[data-lvl="1"]>.row>a{font-weight:700;font-size:.92rem}
+.node[data-lvl="2"]>.row>a{font-weight:600;color:var(--green)}
+.pcount{color:var(--muted);font-size:.72rem;font-weight:400}
+#main{flex:1;min-width:0;display:flex;flex-direction:column}
+#topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:9px 18px;
+  background:var(--paper);border-bottom:1px solid var(--line)}
+#menuBtn{display:none}
+#crumb{color:var(--muted);font-size:.79rem;flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#crumb b{color:var(--accent-text)}
+#content{max-width:900px;margin:0 auto;padding:22px 26px 120px;width:100%}
+h2.doc-title{font-family:var(--read-font);font-size:1.9rem;line-height:1.5;margin:.1em 0 .7em;
+  padding-bottom:.28em;border-bottom:2px solid var(--accent-soft);color:var(--accent-text)}
+p.read{font-family:var(--read-font);font-size:var(--reading-size);line-height:var(--reading-lh);
+  text-align:justify;text-justify:inter-word;margin:0 0 .5em}
+p.read.hl{background:var(--accent-soft);border-radius:8px}
+.child-list{display:grid;gap:8px;margin-top:16px}
+.child-list a{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:11px 14px;
+  box-shadow:none;font-family:var(--read-font);font-size:1.12rem;color:var(--text);
+  display:flex;justify-content:space-between;gap:10px;align-items:center}
+.child-list a:hover{background:var(--gold);color:#fff;border-color:var(--gold)}
+.child-list a:hover .pc{color:#fff}
+.child-list a .pc{color:var(--muted);font-family:var(--ui);font-size:.72rem;white-space:nowrap}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:34px;border-top:1px solid var(--line);padding-top:16px}
+.pager a{display:flex;flex-direction:column;max-width:48%;background:var(--green);color:#fff;
+  border-radius:6px;padding:9px 14px;font-size:.8rem}
+.pager a:hover{filter:brightness(1.1)}
+.pager a.next{text-align:end;margin-inline-start:auto}
+mark{background:var(--mark);color:var(--mark-text);border-radius:3px;padding:0 2px}
+#results{padding:6px 10px 40px;overflow-y:auto;flex:1}
+.res{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:9px 12px;margin:7px 0;
+  cursor:pointer;box-shadow:none}
+.res:hover{background:var(--gold);color:#fff}
+.res:hover .rt,.res:hover .rs{color:#fff}
+.res .rt{font-size:.77rem;color:var(--accent-text);font-weight:600;margin-bottom:3px}
+.res .rs{font-family:var(--read-font);font-size:1.02rem;line-height:1.7;color:var(--text);
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.muted{color:var(--muted);font-size:.82rem;padding:8px 12px}
+#hint{margin:26px auto;max-width:660px;text-align:center;color:var(--muted);font-size:.9rem;line-height:2}
+#hint kbd{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:1px 6px;font-size:.8rem}
+footer#attrib{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);
+  font-size:.74rem;text-align:center;line-height:1.9;background:var(--panel);padding:14px}
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000}
+@media(max-width:860px){
+  #side{position:fixed;top:0;bottom:0;right:-100%;left:auto;transition:right .25s ease;
+    width:86vw;max-width:340px;flex-basis:auto;box-shadow:-4px 0 24px rgba(0,0,0,.35)}
+  #side.open{right:0}
+  #overlay.show{display:block}
+  #menuBtn{display:inline-flex}
+  #main{width:100%}
+  #content{padding:16px 16px 100px;max-width:100%}
+  h2.doc-title{font-size:1.55rem}
+  #topbar{padding:9px 12px}
+  #crumb{font-size:.74rem}
+}
+@media print{#side,#topbar{display:none}}
+</style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <h1>تاريخ ابن خلدون</h1>
+      <p>ديوان المبتدأ والخبر في تاريخ العرب والبربر ومن عاصرهم · إصدار <span id="vlabel">…</span></p>
+    </div>
+    <button id="themeToggle" aria-label="تبديل الوضع النهاري/الليلي" title="تبديل الوضع">🌙</button>
+  </header>
+
+  <main id="content"></main>
+
+  <footer>
+    <p>📜 <b>تاريخ ابن خلدون</b> — ديوان المبتدأ والخبر في تاريخ العرب والبربر ومن عاصرهم، لعبد الرحمن بن محمد ابن خلدون (ت 808هـ / 1406م).</p>
+    <p>النص عن نسخة <b>OpenITI</b> (Shamela_0012320) · تحقيق خليل شحادة، دار الفكر، بيروت (1408هـ/1988م). بلا اختلاق.</p>
+  </footer>
+
+  <script src="book-data.js?v=1.0.6"></script>
+  <script>
+(function(){
+"use strict";
+var BUILD="1.0.6";
+var DATA=window.__IK__;
+var contentEl=document.getElementById('content');
+var esc=function(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});};
+var TASH=/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/;
+function norm(s){var o='',p=true;for(var i=0;i<s.length;i++){var ch=s[i];if(TASH.test(ch))continue;var c=ch;if(c===' '){if(p)continue;p=true;o+=' ';}else{p=false;o+=c;}}return o.toLowerCase();}
+var NODES=[],BY_ID={};
+(function walk(list,parent){for(var i=0;i<list.length;i++){var n=list[i];n.parentId=parent?parent.id:0;BY_ID[n.id]=n;NODES.push(n);if(n.children&&n.children.length)walk(n.children,n);}})(DATA.parts,null);
+var READ=NODES.filter(function(n){return n.paragraphs&&n.paragraphs.length;});
+function renderHome(){
+  var html='<div class="topnav">'+fontControlsHTML()+'<button id="indexBtn" type="button">🔎 الفهرس</button></div>'+
+    '<div class="home"><h1>تاريخ ابن خلدون</h1>'+
+    '<p class="desc">ديوان المبتدأ والخبر في تاريخ العرب والبربر ومن عاصرهم، لعبد الرحمن بن محمد ابن خلدون (ت 808هـ / 1406م).</p>'+
+    '<h2>اختر بابًا للبدء</h2>'+
+    '<div class="chap-list">'+
+    DATA.parts.map(function(p){return '<div class="chap-item"><button class="chap-btn" data-id="'+p.id+'">'+esc(p.title)+'</button></div>';}).join('')+
+    '</div></div>';
+  contentEl.innerHTML=html;
+  document.querySelectorAll('.chap-btn').forEach(function(b){b.onclick=function(){location.hash='#/'+b.dataset.id;};});
+  document.getElementById('indexBtn').onclick=renderIndexPage;
+  setupFontControls();
+}
+function renderIndexPage(){
+  contentEl.innerHTML='<div class="topnav">'+fontControlsHTML()+'<button id="homeBtn">🏠 القائمة الرئيسية</button></div>'+
+    '<div class="card"><h2>🔎 الفهرس والبحث</h2><input id="q" class="index-input" placeholder="ابحث..."></div>';
+  document.getElementById('homeBtn').onclick=renderHome;
+  setupFontControls();
+}
+var fs=24;
+function fontControlsHTML(){return '<span class="font-row"><button id="fdec">A−</button><button id="fres">A</button><button id="finc">A+</button></span>';}
+function setupFontControls(){
+  document.getElementById('fdec').onclick=function(){if(fs>16){fs-=2;document.documentElement.style.setProperty('--content-font-size',fs+'px');}};
+  document.getElementById('fres').onclick=function(){fs=24;document.documentElement.style.setProperty('--content-font-size',fs+'px');}};
+  document.getElementById('finc').onclick=function(){if(fs<40){fs+=2;document.documentElement.style.setProperty('--content-font-size',fs+'px');}};
+}
+function setupTheme(){
+  var t=localStorage.getItem('ik_theme')||'dark';
+  document.documentElement.setAttribute('data-theme',t);
+  var btn=document.getElementById('themeToggle');btn.textContent=t==='dark'?'☀️':'🌙';
+  btn.onclick=function(){var nt=t==='dark'?'light':'dark';t=nt;document.documentElement.setAttribute('data-theme',nt);localStorage.setItem('ik_theme',nt);btn.textContent=nt==='dark'?'☀️':'🌙';};
+}
+setupTheme();
+document.documentElement.style.setProperty('--content-font-size','24px');
+renderHome();
+})();
+  </script>
+</body>
