@@ -170,11 +170,11 @@ footer#attrib{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);
   </main>
 </div>
 
-<script src="book-data.js?v=1.0.4"></script>
+<script src="book-data.js?v=1.0.5"></script>
 <script>
 (function(){
 "use strict";
-var BUILD="1.0.4";
+var BUILD="1.0.5";
 var DATA=window.__IK__;
 var content=document.getElementById('content');
 var treeEl=document.getElementById('tree');
@@ -281,7 +281,7 @@ function renderNode(n,hit){content.innerHTML='';hideResults();qEl.value='';
   // active row
   var prev=treeEl.querySelector('.row.active');if(prev)prev.classList.remove('active');
   openAncestors(n.id);
-  var row=treeEl.querySelector('.node[data-id="'+n.id+'] > .row');
+  var row=treeEl.querySelector('.node[data-id="'+n.id+'"] > .row');
   if(row)row.classList.add('active');
   try{localStorage.setItem('ik.last',n.id);}catch(e){}
   window.scrollTo(0,0);document.getElementById('main').scrollTop=0;closeSide();
