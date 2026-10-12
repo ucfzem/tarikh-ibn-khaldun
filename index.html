@@ -34,7 +34,8 @@
     </script>
     <style>
         body { font-family: 'Cairo', sans-serif; background:#faf5e9; color:#2b2118; }
-        .text-reading { font-family: 'Amiri', serif; line-height: 2.2; }
+        .text-reading { font-family: 'Amiri', serif; line-height: 1.6; margin-bottom: 1.25rem; overflow-wrap: break-word; }
+        main { max-width: 800px; margin-left: auto; margin-right: auto; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(169,121,47,.5); border-radius: 4px; }
@@ -102,7 +103,7 @@
                 </div>
                 <div class="flex items-center bg-slate-100 rounded-lg p-1 border border-slate-200">
                     <button id="fontDecrease" class="px-2 py-1 text-xs font-bold rounded hover:bg-white">A-</button>
-                    <span id="fontSizeIndicator" class="px-2 text-xs">24px</span>
+                    <span id="fontSizeIndicator" class="px-2 text-xs">18px</span>
                     <button id="fontIncrease" class="px-2 py-1 text-xs font-bold rounded hover:bg-white">A+</button>
                 </div>
             </div>
@@ -111,18 +112,16 @@
         </main>
     </div>
 
-    <footer class="py-4 text-center text-xs text-slate-400 border-t border-slate-200 bg-white mt-4">OpenITI (Shamela_0012320) · v1.0.9</footer>
+    <footer class="py-4 text-center text-xs text-slate-400 border-t border-slate-200 bg-white mt-4">OpenITI (Shamela_0012320) · v1.2.0</footer>
 
-    <script src="book-data.js?v=1.0.7"></script>
     <script>
     (function(){
       "use strict";
-      var DATA=window.__IK__||{parts:[]};
-      var NODES=[],BY_ID={};
-      (function walk(list,parent){for(var i=0;i<list.length;i++){var n=list[i];n.parentId=parent?parent.id:0;BY_ID[n.id]=n;NODES.push(n);if(n.children&&n.children.length)walk(n.children,n);}})(DATA.parts,null);
-      var READ=NODES.filter(function(n){return n.paragraphs&&n.paragraphs.length;});
+      var SW_CACHE='tarikh-data-v1.2.0';
+      var READ=[];
       var idx=0;
-      var fs=24;
+      var allLoaded=false;
+      var fs=18;
       var content=document.getElementById('chapterContent');
       var list=document.getElementById('chapterList');
       var q=document.getElementById('searchInput');
@@ -239,11 +238,11 @@
         list.appendChild(frag);
       }
       function renderContent(){
-        if(!READ.length){content.innerHTML='<div class="text-center text-slate-400">لا توجد فقرات</div>';return;}
+        if(!READ.length){content.innerHTML='<div class="text-center text-slate-400 p-8">جارٍ تحميل الكتاب…</div>';return;}
         var n=READ[idx];
         var ps=n.paragraphs||[];
-        var h='<h2 class="text-xl md:text-2xl font-bold font-amiri mb-6">'+esc(n.title)+'</h2>';
-        for(var i=0;i<ps.length;i++){h+='<p class="text-reading mb-4 text-justify">'+esc(ps[i])+'</p>';}
+        var h='<h2 class="text-2xl sm:text-3xl font-bold font-amiri mb-6 pb-3 border-b border-slate-100">'+esc(n.title)+'</h2>';
+        for(var i=0;i<ps.length;i++){h+='<p class="text-reading text-justify">'+esc(ps[i])+'</p>';}
         content.innerHTML=h;
         highlightSearchTerm(content,q.value);
         var els=content.querySelectorAll('.text-reading');
@@ -257,8 +256,8 @@
         renderList(q.value);
         if(scroll!==false)window.scrollTo({top:0,behavior:'smooth'});
       }
-      fdec.onclick=function(){if(fs>16){fs-=2;renderContent();}};
-      finc.onclick=function(){if(fs<34){fs+=2;renderContent();}};
+      fdec.onclick=function(){if(fs>14){fs-=2;renderContent();}};
+      finc.onclick=function(){if(fs<28){fs+=2;renderContent();}};
       q.oninput=function(){
         clearTimeout(debounceTimer);
         debounceTimer=setTimeout(function(){
@@ -293,7 +292,33 @@
       if(sd)sd.onclick=function(){list.scrollTo({top:list.scrollHeight,behavior:'smooth'});};
       var curt=document.documentElement.getAttribute('data-theme')||'dark';
       tt.textContent=curt==='dark'?'☀️':'🌙';
-      renderList(''); render(true);
+      renderList('');
+      content.innerHTML='<div class="text-center text-slate-400 p-8">جارٍ تحميل الكتاب…</div>';
+
+      function appendSections(arr){for(var i=0;i<arr.length;i++)READ.push(arr[i]);}
+      function cachePut(file,res){try{if(res&&res.ok&&'caches' in window){var cc=res.clone();caches.open(SW_CACHE).then(function(c){c.put(file,cc)['catch'](function(){});}).catch(function(){});}}catch(e){}}
+      function getJSON(file){return fetch(file,{cache:'no-store'}).then(function(res){cachePut(file,res);return res.json();});}
+      function refreshNav(){if(!READ.length)return;if(idx>READ.length-1)idx=READ.length-1;prev.disabled=idx===0;next.disabled=idx===READ.length-1;renderList(q.value);}
+      function loadData(){
+        getJSON('data/manifest.json').then(function(man){
+          var chunks=(man&&man.chunks)||[];
+          var i=0;
+          function step(){
+            if(i>=chunks.length){allLoaded=true;updateStats(q.value);return;}
+            var file=chunks[i++].file;
+            getJSON(file).then(function(arr){
+              var first=!READ.length;
+              appendSections(arr);
+              if(first)render(true); else refreshNav();
+              step();
+            }).catch(function(){step();});
+          }
+          step();
+        }).catch(function(){
+          content.innerHTML='<div class="text-center text-red-500 p-8">تعذّر تحميل بيانات الكتاب. تحقّق من الاتصال بالإنترنت.</div>';
+        });
+      }
+      loadData();
     })();
     </script>
 
