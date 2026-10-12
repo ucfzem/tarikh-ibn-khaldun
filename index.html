@@ -302,18 +302,26 @@
       function loadData(){
         getJSON('data/manifest.json').then(function(man){
           var chunks=(man&&man.chunks)||[];
-          var i=0;
-          function step(){
-            if(i>=chunks.length){allLoaded=true;updateStats(q.value);return;}
-            var file=chunks[i++].file;
-            getJSON(file).then(function(arr){
+          var results=new Array(chunks.length), next=0, cursor=0, active=0, MAX=6;
+          function drain(){
+            while(next<chunks.length && results[next]){
+              var arr=results[next]; results[next]=null;
               var first=!READ.length;
               appendSections(arr);
               if(first)render(true); else refreshNav();
-              step();
-            }).catch(function(){step();});
+              next++;
+            }
+            if(next>=chunks.length){allLoaded=true;updateStats(q.value);}
           }
-          step();
+          function pump(){
+            while(active<MAX && cursor<chunks.length){
+              (function(k){
+                active++;
+                getJSON(chunks[k].file).then(function(arr){results[k]=arr||[];active--;drain();pump();}).catch(function(){results[k]=[];active--;drain();pump();});
+              })(cursor++);
+            }
+          }
+          pump();
         }).catch(function(){
           content.innerHTML='<div class="text-center text-red-500 p-8">تعذّر تحميل بيانات الكتاب. تحقّق من الاتصال بالإنترنت.</div>';
         });
