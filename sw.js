@@ -1,9 +1,11 @@
-const CACHE_NAME = 'tarikh-cache-v1.1.0';
+const CACHE_NAME = 'tarikh-cache-v1.1.1';
 const PRECACHE = [
   './',
   './index.html',
   './manifest.json',
   './icon.svg',
+  './icon-192.png',
+  './icon-512.png',
   './book-data.js'
 ];
 const CDN = [
