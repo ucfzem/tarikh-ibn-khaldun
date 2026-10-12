@@ -82,8 +82,10 @@
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-            <div class="mb-3">
-                <input type="text" id="searchInput" placeholder="بحث في العناوين..." class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500">
+            <div class="mb-3 relative">
+                <input type="text" id="searchInput" placeholder="بحث في الفصول والمحتوى..." class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500">
+                <div id="searchStats" class="text-xs text-slate-500 px-1 mt-1.5"></div>
+                <div id="quickJumpResults" class="mt-2 max-h-56 overflow-y-auto bg-white border border-slate-200 rounded-xl shadow-md hidden z-20 p-1 absolute left-0 right-0"></div>
             </div>
                         <div class="flex gap-2 mb-2">
                 <button id="scrollUp" class="flex-1 px-2 py-1.5 text-xs bg-slate-100 rounded-lg hover:bg-slate-200">▲ أعلى</button>
@@ -134,6 +136,34 @@
       var st=document.getElementById('sidebarToggle');
       var sc=document.getElementById('sidebarClose');
       var tt=document.getElementById('themeToggle');
+      function escapeRegExp(s){return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');}
+      function highlightSearchTerm(root, term){
+        if(!term) return;
+        var t=term.trim();
+        if(!t) return;
+        var re=new RegExp('('+escapeRegExp(t)+')','gi');
+        var walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+        var nodes=[];
+        var n;
+        while((n=walker.nextNode())) nodes.push(n);
+        nodes.forEach(function(textNode){
+          if(re.test(textNode.nodeValue)){
+            var frag=document.createDocumentFragment();
+            var parts=textNode.nodeValue.split(re);
+            parts.forEach(function(part){
+              if(part && part.toLowerCase()===t.toLowerCase()){
+                var span=document.createElement('span');
+                span.className='bg-green-200 text-green-900 px-1 rounded font-semibold';
+                span.textContent=part;
+                frag.appendChild(span);
+              } else if(part) {
+                frag.appendChild(document.createTextNode(part));
+              }
+            });
+            textNode.parentNode.replaceChild(frag, textNode);
+          }
+        });
+      }
       function esc(s){return String(s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
                         function hl(s,q){if(!q)return s;q=String(q).trim();if(!q)return s;var parts=q.split(/\s+/);var res=s;try{for(var i=0;i<parts.length;i++){if(!parts[i])continue;var p=parts[i].replace(/[.*+?^${}()|[\]\\]/g,"\\$&");var re=new RegExp("("+p+")","gi");res=res.replace(re,'<span class="bg-green-200 text-green-900 px-1 rounded font-semibold">$1</span>');}}catch(e){}return res;}
 
@@ -158,9 +188,9 @@
         var ps=n.paragraphs||[];
         var h='<h2 class="text-xl md:text-2xl font-bold font-amiri mb-6">'+esc(n.title)+'</h2>';
         for(var i=0;i<ps.length;i++){
-          h+='<p class="text-reading mb-4 text-justify">'+hl(ps[i], q.value)+'</p>';
+          h+='<p class="text-reading mb-4 text-justify">'+ps[i]+'</p>';
         }
-        content.innerHTML=h;
+        content.innerHTML=h; highlightSearchTerm(content, q.value);
         document.querySelectorAll('#chapterContent .text-reading').forEach(function(el){el.style.fontSize=fs+'px';});
         find.textContent=fs+'px';
         prev.disabled=idx===0; next.disabled=idx===READ.length-1;
