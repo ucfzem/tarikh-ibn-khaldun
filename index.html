@@ -84,6 +84,10 @@
             <div class="mb-3">
                 <input type="text" id="searchInput" placeholder="بحث في العناوين..." class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500">
             </div>
+                        <div class="flex gap-2 mb-2">
+                <button id="scrollUp" class="flex-1 px-2 py-1.5 text-xs bg-slate-100 rounded-lg hover:bg-slate-200">▲ أعلى</button>
+                <button id="scrollDown" class="flex-1 px-2 py-1.5 text-xs bg-slate-100 rounded-lg hover:bg-slate-200">▼ أسفل</button>
+            </div>
             <nav id="chapterList" class="flex-1 overflow-y-auto space-y-1 pr-1"></nav>
         </aside>
 
@@ -140,7 +144,7 @@
           var b=document.createElement('button');
           var act=READ.indexOf(n)===idx?'bg-amber-50 text-amber-900 border border-amber-200':'text-slate-600 hover:bg-slate-50';
           b.className='w-full text-right px-3 py-2 rounded-xl text-sm '+act;
-          b.textContent=n.title||'...';
+          b.textContent=(items.indexOf(n)+1)+". "+(n.title||'...');
           b.onclick=function(){idx=READ.indexOf(n);render();if(window.innerWidth<1024)toggleSide(false);};
           list.appendChild(b);
         });
@@ -170,6 +174,10 @@
         localStorage.setItem('ik_theme',nt);
         tt.textContent=nt==='dark'?'☀️':'🌙';
       };
+      var su=document.getElementById('scrollUp');
+      var sd=document.getElementById('scrollDown');
+      if(su)su.onclick=function(){list.scrollTo({top:0,behavior:'smooth'});};
+      if(sd)sd.onclick=function(){list.scrollTo({top:list.scrollHeight,behavior:'smooth'});};
       var curt=document.documentElement.getAttribute('data-theme')||'dark';
       tt.textContent=curt==='dark'?'☀️':'🌙';
       renderList(''); render();
