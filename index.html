@@ -34,7 +34,7 @@
     </script>
     <style>
         body { font-family: 'Cairo', sans-serif; background:#faf5e9; color:#2b2118; }
-        .text-reading { font-family: 'Amiri', serif; line-height: 1.6; margin-bottom: 1.25rem; overflow-wrap: break-word; }
+        .text-reading { font-family: 'Amiri', serif; line-height: 1.6; margin-bottom: 1.25rem; overflow-wrap: break-word; text-align: justify; text-justify: inter-word; direction: rtl; }
         main { max-width: 800px; margin-left: auto; margin-right: auto; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -242,7 +242,7 @@
         var n=READ[idx];
         var ps=n.paragraphs||[];
         var h='<h2 class="text-2xl sm:text-3xl font-bold font-amiri mb-6 pb-3 border-b border-slate-100">'+esc(n.title)+'</h2>';
-        for(var i=0;i<ps.length;i++){h+='<p class="text-reading text-justify">'+esc(ps[i])+'</p>';}
+        for(var i=0;i<ps.length;i++){h+='<p class="text-reading">'+esc(ps[i])+'</p>';}
         content.innerHTML=h;
         highlightSearchTerm(content,q.value);
         var els=content.querySelectorAll('.text-reading');
