@@ -155,7 +155,9 @@
         var n=READ[idx];
         var ps=n.paragraphs||[];
         var h='<h2 class="text-xl md:text-2xl font-bold font-amiri mb-6">'+esc(n.title)+'</h2>';
-        for(var i=0;i<ps.length;i++)
+        for(var i=0;i<ps.length;i++){
+          h+='<p class="text-reading mb-4 text-justify">'+hl(ps[i], q.value)+'</p>';
+        }
         content.innerHTML=h;
         document.querySelectorAll('#chapterContent .text-reading').forEach(function(el){el.style.fontSize=fs+'px';});
         find.textContent=fs+'px';
