@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tarikh-data-v1.3.1';
+const CACHE_NAME = 'tarikh-data-v1.3.2';
 const PRECACHE = [
   './',
   './index.html',
@@ -12,11 +12,31 @@ const CDN = [
   'https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700&display=swap'
 ];
 
+async function precacheAll(cache, urls, concurrency = 4) {
+  let i = 0;
+  const worker = async () => {
+    while (i < urls.length) {
+      const u = urls[i++];
+      try { await cache.add(u); }
+      catch (e) { try { await new Promise((r) => setTimeout(r, 300)); await cache.add(u); } catch (_) {} }
+    }
+  };
+  await Promise.all(Array.from({ length: concurrency }, worker));
+}
+
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
-    await Promise.all(PRECACHE.map((u) => cache.add(u).catch(() => {})));
+    await precacheAll(cache, PRECACHE);
+    try {
+      const res = await fetch('./data/manifest.json');
+      if (res && res.ok) {
+        const man = await res.clone().json();
+        await cache.put('./data/manifest.json', res);
+        await precacheAll(cache, (man.chunks || []).map((c) => './' + c.file));
+      }
+    } catch (e) {}
     await Promise.all(CDN.map((u) =>
       fetch(u, { mode: 'no-cors' }).then((r) => { if (r) return cache.put(u, r); }).catch(() => {})
     ));
