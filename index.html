@@ -51,7 +51,8 @@
         html[data-theme="dark"] .bg-amber-50 { background:#1c2b23; }
         html[data-theme="dark"] .text-amber-900 { color:#d9b977; }
         html[data-theme="dark"] .border-amber-200 { border-color:#4e9a73; }
-    </style>
+            html[data-theme="dark"] mark{background:#4e9a73;color:#1e1912;border-radius:3px;padding:0 2px}
+</style>
     <script>
         (function(){var t=localStorage.getItem('ik_theme')||(window.matchMedia&&window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);})();
     </script>
