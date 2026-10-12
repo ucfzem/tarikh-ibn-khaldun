@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tarikh-data-v1.3.0';
+const CACHE_NAME = 'tarikh-data-v1.3.1';
 const PRECACHE = [
   './',
   './index.html',
