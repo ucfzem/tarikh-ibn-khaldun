@@ -1,43 +1,62 @@
-const CACHE_NAME = 'tarikh-cache-v1.0.9';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'tarikh-cache-v1.1.0';
+const PRECACHE = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './icon.svg',
+  './book-data.js'
+];
+const CDN = [
+  'https://cdn.tailwindcss.com',
+  'https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700&display=swap'
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
-  );
   self.skipWaiting();
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    await Promise.all(PRECACHE.map((u) => cache.add(u).catch(() => {})));
+    await Promise.all(CDN.map((u) =>
+      fetch(u, { mode: 'no-cors' }).then((r) => { if (r) return cache.put(u, r); }).catch(() => {})
+    ));
+  })());
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => Promise.all(
       keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
-    ))
+    )).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
+  const url = new URL(req.url);
 
-  const isHTML = req.mode === 'navigate' ||
-    req.url.endsWith('.html') ||
-    req.url.endsWith('/');
-
+  const isHTML = req.mode === 'navigate' || req.url.endsWith('.html') || req.url.endsWith('/');
   if (isHTML) {
     event.respondWith(
       fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE_NAME).then((c) => c.put(req, copy));
+        caches.open(CACHE_NAME).then((c) => c.put(req, res.clone()));
         return res;
-      }).catch(() =>
-        caches.match(req).then((c) => c || caches.match('./index.html'))
-      )
+      }).catch(() => caches.match('./index.html').then((r) => r || caches.match('./')))
+    );
+    return;
+  }
+
+  if (url.origin === self.location.origin) {
+    event.respondWith(
+      caches.match(req, { ignoreSearch: true }).then((cached) => {
+        if (cached) return cached;
+        return fetch(req).then((res) => {
+          if (res && res.ok) {
+            caches.open(CACHE_NAME).then((c) => c.put(req, res.clone()));
+          }
+          return res;
+        });
+      })
     );
     return;
   }
@@ -46,12 +65,11 @@ self.addEventListener('fetch', (event) => {
     caches.match(req).then((cached) => {
       if (cached) return cached;
       return fetch(req).then((res) => {
-        if (res && res.ok && req.url.includes('.json')) {
-          const copy = res.clone();
-          caches.open(CACHE_NAME).then((c) => c.put(req, copy));
+        if (res && (res.ok || res.type === 'opaque')) {
+          caches.open(CACHE_NAME).then((c) => c.put(req, res.clone()));
         }
         return res;
-      });
+      }).catch(() => cached);
     })
   );
 });
