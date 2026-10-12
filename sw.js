@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tarikh-cache-v1.0.8';
+const CACHE_NAME = 'tarikh-cache-v1.0.9';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -24,17 +24,33 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
+
+  const isHTML = req.mode === 'navigate' ||
+    req.url.endsWith('.html') ||
+    req.url.endsWith('/');
+
+  if (isHTML) {
+    event.respondWith(
+      fetch(req).then((res) => {
+        const copy = res.clone();
+        caches.open(CACHE_NAME).then((c) => c.put(req, copy));
+        return res;
+      }).catch(() =>
+        caches.match(req).then((c) => c || caches.match('./index.html'))
+      )
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
       return fetch(req).then((res) => {
-        if (res && res.ok && (req.url.includes('.json') || req.url.includes('.html'))) {
+        if (res && res.ok && req.url.includes('.json')) {
           const copy = res.clone();
           caches.open(CACHE_NAME).then((c) => c.put(req, copy));
         }
         return res;
-      }).catch(() => {
-        if (req.mode === 'navigate') return caches.match('./index.html');
       });
     })
   );
