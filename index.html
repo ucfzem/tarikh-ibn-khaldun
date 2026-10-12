@@ -135,7 +135,7 @@
       var sc=document.getElementById('sidebarClose');
       var tt=document.getElementById('themeToggle');
       function esc(s){return String(s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-            function hl(s,q){if(!q)return esc(s);q=String(q).trim();if(!q)return esc(s);var parts=q.split(/\s+/);var res=esc(s);try{for(var i=0;i<parts.length;i++){if(!parts[i])continue;var p=parts[i].replace(/[.*+?^${}()|[\]\\]/g,"\\$&");var re=new RegExp("("+p+")","gi");res=res.replace(re,'<mark class="bg-green-200 text-slate-900 px-0.5 rounded">$1</mark>');}return res;}catch(e){return esc(s);}}
+                  function hl(s,q){if(!q)return esc(s);q=String(q).trim();if(!q)return esc(s);var parts=q.split(/\s+/);var res=s;for(var i=0;i<parts.length;i++){if(!parts[i])continue;var p=parts[i].replace(/[.*+?^${}()|[\]\\]/g,"\\$&");var re=new RegExp("("+p+")","gi");res=res.replace(re,function(m){return "<mark class=\"bg-green-200 text-slate-900 px-0.5 rounded\">"+m+"</mark>";});}return res.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/&lt;mark class="bg-green-200 text-slate-900 px-0.5 rounded"&gt;/g,"<mark class=\"bg-green-200 text-slate-900 px-0.5 rounded\">").replace(/&lt;\/mark&gt;/g,"</mark>");}
 
       function toggleSide(o){if(o){side.classList.remove('translate-x-full');sb.classList.remove('hidden');}else{side.classList.add('translate-x-full');sb.classList.add('hidden');}}
       st.onclick=function(){toggleSide(true);}; sc.onclick=function(){toggleSide(false);}; sb.onclick=function(){toggleSide(false);};
