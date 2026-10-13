@@ -76,7 +76,7 @@
 
     <div class="w-full flex-1 flex px-0 md:px-0 lg:px-0 py-6 gap-6 relative">
         <div id="sidebarBackdrop" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
-        <aside id="sidebar" class="fixed lg:static inset-y-0 right-0 w-[85%] max-w-[340px] bg-white border border-slate-200 rounded-2xl p-4 flex flex-col z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-lg lg:shadow-none h-[calc(100vh-6rem)] lg:h-auto">
+        <aside id="sidebar" class="fixed lg:sticky lg:inset-y-auto lg:top-24 lg:self-start inset-y-0 right-0 w-[85%] max-w-[340px] bg-white border border-slate-200 rounded-2xl p-4 flex flex-col z-40 transform translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-lg lg:shadow-none h-[calc(100vh-6rem)] lg:h-[calc(100vh-7rem)]">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
                 <h2 class="font-bold text-base">فهرس الكتاب</h2>
                 <button id="sidebarClose" class="lg:hidden p-1 rounded-md text-slate-400 hover:text-slate-600">
@@ -92,7 +92,7 @@
                 <button id="scrollUp" class="flex-1 px-2 py-1.5 text-xs bg-slate-100 rounded-lg hover:bg-slate-200">▲ أعلى</button>
                 <button id="scrollDown" class="flex-1 px-2 py-1.5 text-xs bg-slate-100 rounded-lg hover:bg-slate-200">▼ أسفل</button>
             </div>
-            <nav id="chapterList" class="flex-1 overflow-y-auto space-y-1 pr-1"></nav>
+            <nav id="chapterList" class="flex-1 min-h-0 overflow-y-auto space-y-1 pr-1"></nav>
         </aside>
 
         <main class="flex-1 bg-white border border-slate-200 rounded-2xl p-6 md:p-8 lg:p-10 shadow-sm flex flex-col min-h-[70vh]">
